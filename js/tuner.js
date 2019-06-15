@@ -1,9 +1,9 @@
-function Tuner(){
-    function randomInteger(min, max){
+function Tuner() {
+    function randomInteger(min, max) {
         return Math.floor(Math.random() * (max - min) + min);
     }
 
-    function normalize(candidate){
+    function normalize(candidate) {
         var norm = Math.sqrt(candidate.heightWeight * candidate.heightWeight + candidate.linesWeight * candidate.linesWeight + candidate.holesWeight * candidate.holesWeight + candidate.bumpinessWeight * candidate.bumpinessWeight);
         candidate.heightWeight /= norm;
         candidate.linesWeight /= norm;
@@ -11,7 +11,7 @@ function Tuner(){
         candidate.bumpinessWeight /= norm;
     }
 
-    function generateRandomCandidate(){
+    function generateRandomCandidate() {
         var candidate = {
             heightWeight: Math.random() - 0.5,
             linesWeight: Math.random() - 0.5,
@@ -22,30 +22,30 @@ function Tuner(){
         return candidate;
     }
 
-    function sort(candidates){
-        candidates.sort(function(a, b){
+    function sort(candidates) {
+        candidates.sort(function (a, b) {
             return b.fitness - a.fitness;
         });
     }
 
-    function computeFitnesses(candidates, numberOfGames, maxNumberOfMoves){
-        for(var i = 0; i < candidates.length; i++){
+    function computeFitnesses(candidates, numberOfGames, maxNumberOfMoves) {
+        for (var i = 0; i < candidates.length; i++) {
             var candidate = candidates[i];
             var ai = new AI(candidate.heightWeight, candidate.linesWeight, candidate.holesWeight, candidate.bumpinessWeight);
             var totalScore = 0;
-            for(var j = 0; j < numberOfGames; j++){
+            for (var j = 0; j < numberOfGames; j++) {
                 var grid = new Grid(22, 10);
                 var rpg = new RandomPieceGenerator();
                 var workingPieces = [rpg.nextPiece(), rpg.nextPiece()];
                 var workingPiece = workingPieces[0];
                 var score = 0;
                 var numberOfMoves = 0;
-                while((numberOfMoves++) < maxNumberOfMoves && !grid.exceeded()){
+                while ((numberOfMoves++) < maxNumberOfMoves && !grid.exceeded()) {
                     workingPiece = ai.best(grid, workingPieces);
-                    while(workingPiece.moveDown(grid));
+                    while (workingPiece.moveDown(grid)) ;
                     grid.addPiece(workingPiece);
                     score += grid.clearLines();
-                    for(var k = 0; k < workingPieces.length - 1; k++){
+                    for (var k = 0; k < workingPieces.length - 1; k++) {
                         workingPieces[k] = workingPieces[k + 1];
                     }
                     workingPieces[workingPieces.length - 1] = rpg.nextPiece();
@@ -57,9 +57,9 @@ function Tuner(){
         }
     }
 
-    function tournamentSelectPair(candidates, ways){
+    function tournamentSelectPair(candidates, ways) {
         var indices = [];
-        for(var i = 0; i <  candidates.length; i++){
+        for (var i = 0; i < candidates.length; i++) {
             indices.push(i);
         }
 
@@ -71,19 +71,19 @@ function Tuner(){
         */
         var fittestCandidateIndex1 = null;
         var fittestCanddiateIndex2 = null;
-        for(var i = 0; i < ways; i++){
+        for (var i = 0; i < ways; i++) {
             var selectedIndex = indices.splice(randomInteger(0, indices.length), 1)[0];
-            if(fittestCandidateIndex1 === null || selectedIndex < fittestCandidateIndex1){
+            if (fittestCandidateIndex1 === null || selectedIndex < fittestCandidateIndex1) {
                 fittestCanddiateIndex2 = fittestCandidateIndex1;
                 fittestCandidateIndex1 = selectedIndex;
-            }else if (fittestCanddiateIndex2 === null || selectedIndex < fittestCanddiateIndex2){
+            } else if (fittestCanddiateIndex2 === null || selectedIndex < fittestCanddiateIndex2) {
                 fittestCanddiateIndex2 = selectedIndex;
             }
         }
         return [candidates[fittestCandidateIndex1], candidates[fittestCanddiateIndex2]];
     }
 
-    function crossOver(candidate1, candidate2){
+    function crossOver(candidate1, candidate2) {
         var candidate = {
             heightWeight: candidate1.fitness * candidate1.heightWeight + candidate2.fitness * candidate2.heightWeight,
             linesWeight: candidate1.fitness * candidate1.linesWeight + candidate2.fitness * candidate2.linesWeight,
@@ -94,9 +94,9 @@ function Tuner(){
         return candidate;
     }
 
-    function mutate(candidate){
+    function mutate(candidate) {
         var quantity = Math.random() * 0.4 - 0.2; // plus/minus 0.2
-        switch(randomInteger(0, 4)){
+        switch (randomInteger(0, 4)) {
             case 0:
                 candidate.heightWeight += quantity;
                 break;
@@ -112,9 +112,9 @@ function Tuner(){
         }
     }
 
-    function deleteNLastReplacement(candidates, newCandidates){
+    function deleteNLastReplacement(candidates, newCandidates) {
         candidates.slice(-newCandidates.length);
-        for(var i = 0; i < newCandidates.length; i++){
+        for (var i = 0; i < newCandidates.length; i++) {
             candidates.push(newCandidates[i]);
         }
         sort(candidates);
@@ -126,11 +126,11 @@ function Tuner(){
         Max moves per round = 200
         Theoretical fitness limit = 5 * 200 * 4 / 10 = 400
     */
-    this.tune = function(){
+    this.tune = function () {
         var candidates = [];
 
         // Initial population generation
-        for(var i = 0; i < 100; i++){
+        for (var i = 0; i < 100; i++) {
             candidates.push(generateRandomCandidate());
         }
 
@@ -139,13 +139,13 @@ function Tuner(){
         sort(candidates);
 
         var count = 0;
-        while(true){
+        while (true) {
             var newCandidates = [];
-            for(var i = 0; i < 30; i++){ // 30% of population
+            for (var i = 0; i < 30; i++) { // 30% of population
                 var pair = tournamentSelectPair(candidates, 10); // 10% of population
                 //console.log('fitnesses = ' + pair[0].fitness + ',' + pair[1].fitness);
                 var candidate = crossOver(pair[0], pair[1]);
-                if(Math.random() < 0.05){// 5% chance of mutation
+                if (Math.random() < 0.05) {// 5% chance of mutation
                     mutate(candidate);
                 }
                 normalize(candidate);
@@ -155,7 +155,7 @@ function Tuner(){
             computeFitnesses(newCandidates, 5, 200);
             deleteNLastReplacement(candidates, newCandidates);
             var totalFitness = 0;
-            for(var i = 0; i < candidates.length; i++){
+            for (var i = 0; i < candidates.length; i++) {
                 totalFitness += candidates[i].fitness;
             }
             console.log('Average fitness = ' + (totalFitness / candidates.length));

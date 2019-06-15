@@ -3,15 +3,15 @@ function Stopwatch(callback) {
     var startDate = null;
     var self = this;
 
-    var onAnimationFrame = function(){
-        if(isStopped){
+    var onAnimationFrame = function () {
+        if (isStopped) {
             return;
         }
         callback(Date.now() - startDate);
         requestAnimationFrame(onAnimationFrame);
     };
 
-    this.stop = function() {
+    this.stop = function () {
         isStopped = true;
     }
 

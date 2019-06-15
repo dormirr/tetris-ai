@@ -1,24 +1,24 @@
-function RandomPieceGenerator(){
+function RandomPieceGenerator() {
     Math.seed
     this.bag = [0, 1, 2, 3, 4, 5, 6];
     this.shuffleBag();
     this.index = -1;
 };
 
-RandomPieceGenerator.prototype.nextPiece = function(){
+RandomPieceGenerator.prototype.nextPiece = function () {
     this.index++;
-    if (this.index >= this.bag.length){
+    if (this.index >= this.bag.length) {
         this.shuffleBag();
         this.index = 0;
     }
     return Piece.fromIndex(this.bag[this.index]);
 };
 
-RandomPieceGenerator.prototype.shuffleBag = function() {
+RandomPieceGenerator.prototype.shuffleBag = function () {
     var currentIndex = this.bag.length
         , temporaryValue
         , randomIndex
-        ;
+    ;
 
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
